@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShurReviews</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1a1a;--s1:#252525;--s2:#2f2f2f;--line:#3b3b3b;--tx:#e6e6e6;--mut:#9d9d9d;--ac:#ff6633;--ac2:#ff8844;--ac-tx:#1a1a1a;--men:#5aa9ff;--ok:#5fd68f;--bad:#ff6b5e;--cs:15px;
+--serif:'Fraunces',Georgia,serif;--sans:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif}
+[data-theme=light]{--bg:#f5f5f5;--s1:#fff;--s2:#efefef;--line:#dcdcdc;--tx:#1a1a1a;--mut:#666;--ac:#f0501d;--ac2:#ff6633;--ac-tx:#fff;--men:#1664b8;--ok:#13804d;--bad:#c23a2d}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font:16px/1.55 var(--sans);transition:background .3s}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.1rem}
+header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,var(--bg),var(--s1));border-bottom:3px solid var(--ac)}
+.hd{display:flex;align-items:center;gap:1rem;height:64px}
+.logo{font:700 24px var(--serif);letter-spacing:-.5px;margin-right:auto;color:var(--ac);cursor:pointer}
+.hd nav{display:flex;gap:.25rem;align-items:center}
+.nv{padding:.5rem .9rem;border-radius:8px;font-weight:600;color:var(--mut)}
+.nv:hover,.nv.on{color:var(--tx);background:var(--s2)}
+.cta{background:var(--ac);color:var(--ac-tx);padding:.55rem 1.1rem;border-radius:8px;font-weight:700}
+.cta:hover{background:var(--ac2)}
+.ib{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;position:relative}
+.ib:hover{background:var(--s2)}
+.ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.badge{position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--ac);color:var(--ac-tx);font:700 11px/18px var(--sans);text-align:center}
+.badge[hidden]{display:none}
+.ring-bell{animation:ring .8s}
+@keyframes ring{20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+.rel{position:relative}
+.pop{position:absolute;right:0;top:52px;width:min(380px,calc(100vw - 1.5rem));background:var(--s1);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.4);display:none;overflow:hidden}
+.pop.open{display:block}
+.pop-h{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;border-bottom:1px solid var(--line);font-weight:700}
+.pop-h button{font-size:13px;color:var(--ac);font-weight:600}
+.tabs{display:flex;gap:.25rem;padding:.5rem .75rem;border-bottom:1px solid var(--line)}
+.tab{padding:.3rem .75rem;border-radius:8px;font-size:13px;font-weight:600;color:var(--mut)}
+.tab.on{background:var(--ac);color:var(--ac-tx)}
+.nl{max-height:380px;overflow:auto}
+.ni{display:grid;grid-template-columns:34px 1fr;gap:.7rem;padding:.8rem 1rem;width:100%;text-align:left;border-bottom:1px solid var(--line);position:relative}
+.ni:hover{background:var(--s2)}
+.ni.un{background:color-mix(in srgb,var(--ac) 8%,transparent)}
+.ni.un::after{content:"";position:absolute;right:1rem;top:1rem;width:9px;height:9px;border-radius:50%;background:var(--ac)}
+.ni .ico{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--s2);color:var(--men);font:700 15px var(--serif)}
+.ni small{display:block;color:var(--mut);font-size:12px}
+.ni p{font-size:14px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:270px}
+.empty{padding:2rem 1rem;text-align:center;color:var(--mut);font-size:14px}
+.set{padding:1rem;display:grid;gap:.9rem;font-size:14px}
+.set label{display:flex;justify-content:space-between;align-items:center;gap:1rem;font-weight:600}
+.set input[type=range]{accent-color:var(--ac)}
+.seg{display:flex;background:var(--s2);border-radius:8px;padding:3px}
+.seg button{padding:.25rem .8rem;border-radius:6px;font-size:13px;font-weight:600}
+.seg .on{background:var(--ac);color:var(--ac-tx)}
+#toasts{position:fixed;top:76px;right:1rem;z-index:100;display:grid;gap:.6rem;width:min(360px,calc(100vw - 2rem))}
+.toast{background:var(--s1);border:1px solid var(--line);border-left:4px solid var(--ac);border-radius:12px;padding:.8rem .9rem;box-shadow:0 14px 36px rgba(0,0,0,.4);display:grid;grid-template-columns:auto 1fr auto;gap:.2rem .7rem;position:relative;overflow:hidden;animation:tin .35s cubic-bezier(.2,.9,.3,1.2)}
+.toast.ok{border-left-color:var(--ok)}.toast.err{border-left-color:var(--bad)}
+.toast .ti{grid-row:span 2;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--s2);font-weight:700}
+.toast.ok .ti{color:var(--ok)}.toast.err .ti{color:var(--bad)}.toast.info .ti{color:var(--men)}
+.toast strong{font-size:14px}.toast span{font-size:13px;color:var(--mut)}
+.toast .x{color:var(--mut);align-self:start;font-size:18px;line-height:1}
+.toast .ta{grid-column:2/4;justify-self:start;margin-top:.3rem;color:var(--ac);font-weight:700;font-size:13px}
+.toast .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--ac);opacity:.7;animation:bar linear forwards}
+.toast.out{animation:tout .25s forwards}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}}@keyframes tout{to{opacity:0;transform:translateX(30px)}}@keyframes bar{from{width:100%}to{width:0}}
+.hero{padding:2.5rem 0 1.2rem}
+.hero h1{font:700 clamp(28px,5vw,44px)/1.1 var(--serif);letter-spacing:-1px;max-width:16ch}
+.hero p{color:var(--mut);margin:.8rem 0 1.2rem;max-width:48ch;font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{padding:.4rem .9rem;border-radius:8px;border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--mut);transition:.15s}
+.chip:hover{border-color:var(--ac);color:var(--tx)}
+.chip.on{background:var(--ac);color:var(--ac-tx);border-color:var(--ac)}
+.feed{display:grid;gap:1rem;margin:1.5rem 0 4rem}
+.card{display:grid;grid-template-columns:110px 1fr auto;gap:1.3rem;padding:1rem;background:var(--s1);border:1px solid var(--line);border-left:4px solid var(--ac);border-radius:12px;cursor:pointer;transition:transform .2s,box-shadow .2s;text-align:left;width:100%}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px color-mix(in srgb,var(--ac) 22%,transparent)}
+.cover{aspect-ratio:2/3;border-radius:8px;background:linear-gradient(160deg,hsl(var(--h) 50% 36%),hsl(calc(var(--h) + 50) 55% 14%));display:flex;align-items:flex-end;padding:.6rem;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.3);position:relative}
+.cover span{font:700 15px/1.15 var(--serif);color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.5);position:relative}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card h3{font:700 22px/1.2 var(--serif)}
+.meta{color:var(--mut);font-size:14px;margin:.25rem 0 .6rem}
+.snip{opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem}
+.tag{font-size:13px;padding:.15rem .65rem;border-radius:99px;background:color-mix(in srgb,var(--ac) 16%,transparent);color:var(--ac);font-weight:600}
+.tag.sp{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}
+.ring{--p:80;width:62px;height:62px;border-radius:50%;background:conic-gradient(var(--ac) calc(var(--p)*1%),var(--s2) 0);display:grid;place-items:center;flex:none}
+.ring b{width:50px;height:50px;border-radius:50%;background:var(--s1);display:grid;place-items:center;font:700 19px var(--serif)}
+.cc{font-size:13px;color:var(--mut);text-align:center;margin-top:.4rem}
+.cr{padding:2.2rem 0 5rem}
+.cr h1{font:700 clamp(28px,4.5vw,40px)/1.1 var(--serif);letter-spacing:-1px}
+.sub{color:var(--mut);margin:.5rem 0 2rem}
+.blk{margin-bottom:1.8rem}
+.lab{display:block;font-weight:700;font-size:14px;margin-bottom:.5rem}
+.lab small{font-weight:400;color:var(--mut)}
+.in{width:100%;padding:.7rem .9rem;background:var(--s1);border:1px solid var(--line);border-radius:10px}
+.in:focus,.lst:focus-within{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent)}
+.big{font:700 28px var(--serif);padding:.5rem 0;border:0;border-bottom:2px solid var(--line);border-radius:0;background:none}
+.big:focus{box-shadow:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.lst{display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem;background:var(--s1);border:1px solid var(--line);border-radius:10px;min-height:46px;align-items:center}
+.lst input{flex:1;min-width:140px;background:none;border:0;outline:none;padding:.25rem}
+.li{display:flex;align-items:center;gap:.4rem;padding:.2rem .3rem .2rem .7rem;border-radius:99px;font-size:14px;font-weight:600;background:var(--s2)}
+.li.p{color:var(--ok)}.li.c{color:var(--bad)}.li.t{color:var(--ac)}
+.li button{width:20px;height:20px;border-radius:50%;line-height:1}.li button:hover{background:rgba(128,128,128,.3)}
+.xf{display:grid;grid-template-columns:1fr 1fr auto;gap:.5rem;margin-top:.6rem}
+.addf{margin-top:.6rem;color:var(--ac);font-weight:700;font-size:14px}
+.ed{border:1px solid var(--line);border-radius:12px;background:var(--s1);overflow:hidden}
+.ed:focus-within{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.tb{display:flex;flex-wrap:wrap;gap:2px;padding:.45rem;border-bottom:1px solid var(--line);background:var(--s2);align-items:center}
+.tb button{min-width:34px;height:34px;padding:0 .55rem;border-radius:8px;font-weight:700;font-size:14px;color:var(--mut)}
+.tb button:hover{background:var(--s1);color:var(--tx)}
+.tb button.on{background:var(--ac);color:var(--ac-tx)}
+.tb button.sp{color:var(--bad)}.tb button.sp.on{color:var(--ac-tx)}
+.tb i.d{width:1px;height:20px;background:var(--line);margin:0 .3rem}
+.rte{outline:none;overflow-wrap:anywhere}
+.rte:empty::before{content:attr(data-ph);color:var(--mut);pointer-events:none}
+.ed .rte{min-height:340px;padding:1.2rem 1.4rem;font:19px/1.75 var(--serif)}
+.ef{display:flex;justify-content:space-between;gap:1rem;padding:.5rem .9rem;border-top:1px solid var(--line);font-size:13px;color:var(--mut);flex-wrap:wrap}
+.ef .sw{color:var(--bad);font-weight:700}
+.tip{font-size:13px;color:var(--mut);margin-top:.5rem}
+.scorebox{display:flex;align-items:center;gap:1.2rem}
+.scorebox input{flex:1;accent-color:var(--ac)}
+.pub{display:flex;gap:1rem;align-items:center;justify-content:flex-end;border-top:1px solid var(--line);padding-top:1.4rem}
+.ghost{padding:.65rem 1.2rem;border-radius:8px;border:1px solid var(--line);font-weight:600}
+.ghost:hover{border-color:var(--ac);color:var(--ac)}
+.pub .cta{padding:.8rem 2rem;font-size:16px}
+.dt{padding:2.2rem 0 5rem}
+.back{color:var(--mut);font-weight:600;margin-bottom:1.5rem}.back:hover{color:var(--ac)}
+.dh{display:grid;grid-template-columns:190px 1fr;gap:2rem;margin-bottom:2rem}
+.dh h1{font:700 clamp(30px,5vw,44px)/1.05 var(--serif);letter-spacing:-1px}
+.verdict{font:italic 500 22px/1.35 var(--serif);margin:1rem 0;padding-left:1rem;border-left:3px solid var(--ac)}
+.facts{display:flex;flex-wrap:wrap;gap:.5rem}
+.fact{background:var(--s1);border:1px solid var(--line);border-radius:8px;padding:.35rem .75rem;font-size:13px;color:var(--mut)}
+.fact b{color:var(--tx);display:block;font-size:15px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+.pc>div{border-radius:12px;padding:1rem 1.1rem;background:var(--s1);border:1px solid var(--line)}
+.pc h4{font-size:14px;margin-bottom:.5rem}
+.pc .p h4{color:var(--ok)}.pc .c h4{color:var(--bad)}
+.pc ul{list-style:none}.pc li{font-size:15px;padding-left:1.4rem;position:relative;margin-bottom:.25rem}
+.pc .p li::before{content:"+";position:absolute;left:0;color:var(--ok);font-weight:700}
+.pc .c li::before{content:"−";position:absolute;left:0;color:var(--bad);font-weight:700}
+.prose,.rte{font-family:var(--serif)}
+.prose{font-size:19px;line-height:1.75;max-width:66ch}
+.prose p,.rte p,.rte div{margin-bottom:1rem}
+.prose h2,.rte h2{font:700 28px/1.2 var(--serif);margin:1.8rem 0 .7rem}
+.prose h3,.rte h3{font:700 22px/1.2 var(--serif);margin:1.5rem 0 .5rem}
+.prose ul,.prose ol,.rte ul,.rte ol{margin:0 0 1rem 1.5rem}
+.prose blockquote,.rte blockquote,.txt blockquote{border-left:3px solid var(--ac);padding:.2rem 0 .2rem 1rem;margin:0 0 1rem;color:var(--mut);font-style:italic}
+.prose hr,.rte hr{border:0;text-align:center;margin:2rem 0;color:var(--mut);height:1.5em}
+.prose hr::before,.rte hr::before{content:"✦  ✦  ✦";letter-spacing:.4em}
+.prose a,.rte a,.txt a{color:var(--men)}
+.prose img,.rte img,.txt img{max-width:100%;border-radius:10px}
+.men{color:var(--men);font-weight:600;background:color-mix(in srgb,var(--men) 14%,transparent);padding:0 4px;border-radius:5px}
+.spl{filter:blur(6px);background:rgba(128,128,128,.28);border-radius:4px;padding:0 3px;cursor:pointer;transition:filter .25s;user-select:none}
+.spl:hover,.spl.show,.spl:focus-visible{filter:none;user-select:auto}
+@media(hover:none){.spl:hover{filter:blur(6px)}.spl.show:hover{filter:none}}
+.rte .spl{filter:none;user-select:auto;background:color-mix(in srgb,var(--bad) 14%,transparent);outline:1px dashed var(--bad);cursor:text}
+.spw{background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);color:var(--bad);border-radius:10px;padding:.7rem 1rem;margin-bottom:1.5rem;font-size:15px;font-weight:600}
+.chd{margin:3rem 0 1rem;border-top:1px solid var(--line);padding-top:2rem}
+.chd h2{font:700 26px var(--serif)}
+.cm{display:grid;grid-template-columns:28px 1fr;gap:0 .7rem;margin-top:1rem}
+.av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 12px var(--sans);color:#fff;background:hsl(var(--h) 45% 38%)}
+.rail{cursor:pointer;display:flex;justify-content:center;margin-top:.3rem;height:calc(100% - 36px)}
+.rail::before{content:"";width:2px;height:100%;background:var(--line);border-radius:2px;transition:.15s}
+.rail:hover::before{background:var(--ac);width:3px}
+.cb{min-width:0;font-size:var(--cs)}
+.top{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--mut)}
+.top b{color:var(--tx);font-size:14px}
+.op{background:var(--s2);color:var(--ac);font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;border:1px solid var(--ac)}
+.best{background:var(--ac);color:var(--ac-tx);font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px}
+.to em{font-style:normal;color:var(--men)}
+.txt{margin:.3rem 0 .4rem;line-height:1.6;overflow-wrap:anywhere;font-family:var(--sans)}
+.txt p,.txt div{margin-bottom:.5rem}.txt blockquote{font-size:.95em;font-family:var(--sans);margin-bottom:.5rem}
+.act{display:flex;gap:.2rem;align-items:center;font-size:13px;font-weight:600;color:var(--mut);flex-wrap:wrap}
+.act button{padding:.25rem .55rem;border-radius:8px}
+.act button:hover{background:var(--s2);color:var(--tx)}
+.act .sc{min-width:1.8rem;text-align:center;color:var(--tx)}
+.act .up.on{color:var(--ac)}.act .dn.on{color:var(--men)}
+.in-c{border-radius:10px;padding:.2rem .5rem;margin:0 -.5rem}
+.topc>.cb>.in-c{background:color-mix(in srgb,var(--ac) 9%,transparent);border:1px solid color-mix(in srgb,var(--ac) 55%,transparent);box-shadow:0 0 22px color-mix(in srgb,var(--ac) 18%,transparent);padding:.6rem .8rem}
+.cm.hl>.cb>.in-c{animation:fl 2.2s}
+@keyframes fl{0%,40%{background:color-mix(in srgb,var(--ac) 25%,transparent)}}
+.cm.col>.cb>.kids,.cm.col>.cb>.in-c>.txt,.cm.col>.cb>.in-c>.act{display:none}
+.cm.col>.cb>.in-c>.top::after{content:"· hilo contraído, toca la línea para abrir";font-style:italic}
+.cm.hidc>.cb>.kids{display:none}
+.hid{margin:.3rem 0;padding:.5rem .8rem;border-radius:8px;background:var(--s1);border:1px dashed var(--line);color:var(--mut);font-size:13px;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center}
+.hid button{color:var(--ac);font-weight:700}
+.cm.flat>.cb>.kids{margin-left:-35px}
+.slot{margin:.4rem 0}
+.cmp{background:var(--s1);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-family:var(--sans)}
+.cmp:focus-within{border-color:var(--ac)}
+.cmp .rte{font:var(--cs)/1.6 var(--sans);padding:.8rem 1rem;min-height:84px}
+.cmp .rte p,.cmp .rte div{margin-bottom:.4rem}
+.cmp .tb{border-top:1px solid var(--line);border-bottom:0;background:none;padding:.35rem .5rem}
+.cmp .tb button{min-width:30px;height:30px}
+.cmp .go{margin-left:auto;display:flex;gap:.4rem;align-items:center}
+.cmp .cta{padding:.4rem 1rem;font-size:14px}
+.ctx{padding:.4rem 1rem;background:var(--s2);font-size:13px;color:var(--mut);display:flex;justify-content:space-between}
+.ctx em{font-style:normal;color:var(--men);font-weight:700}
+.mn{position:fixed;z-index:60;background:var(--s1);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);padding:.3rem;display:none}
+.mn button{display:block;width:100%;text-align:left;padding:.4rem .8rem;border-radius:6px;font-weight:600}
+.mn button.on,.mn button:hover{background:var(--s2);color:var(--men)}
+@media(max-width:700px){
+.card{grid-template-columns:84px 1fr}.card>div:last-child{grid-column:2}.cc{display:none}
+.dh{grid-template-columns:1fr}.dh .cover{max-width:150px}.grid2,.grid3,.pc{grid-template-columns:1fr}
+.nv{display:none}.hd{gap:.4rem}#toasts{top:auto;bottom:1rem}
+.cm{grid-template-columns:20px 1fr;gap:0 .5rem}.av{width:22px;height:22px;font-size:10px}.cm.flat>.cb>.kids{margin-left:-28px}.ed .rte{font-size:17px}.xf{grid-template-columns:1fr 1fr auto}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap hd">
+  <div class="logo" onclick="go('home')">ShurReviews</div>
+  <nav><button class="nv on" data-p="home" onclick="go('home')">Inicio</button><button class="cta" onclick="go('create')">Escribir review</button></nav>
+  <div class="rel">
+    <button class="ib" id="bell" aria-label="Notificaciones" aria-expanded="false" onclick="pop('np')"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="badge" id="bd" hidden>0</span></button>
+    <div class="pop" id="np" role="dialog" aria-label="Notificaciones">
+      <div class="pop-h">Notificaciones<button onclick="readAll()">Marcar todo como leído</button></div>
+      <div class="tabs" id="nt"></div><div class="nl" id="nl"></div>
+    </div>
+  </div>
+  <div class="rel">
+    <button class="ib" aria-label="Ajustes de lectura" aria-expanded="false" onclick="pop('sp')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></button>
+    <div class="pop" id="sp" style="width:290px"><div class="set">
+      <label>Tema <span class="seg" id="th"><button data-t="dark" onclick="theme('dark')">Oscuro</button><button data-t="light" onclick="theme('light')">Claro</button></span></label>
+      <label>Texto de comentarios <input type="range" id="fs" min="13" max="19" value="15" oninput="fsize(this.value)" aria-label="Tamaño del texto"></label>
+    </div></div>
+  </div>
+</div></header>
+<div id="toasts" aria-live="polite"></div>
+<div class="mn" id="mn"></div>
+<main class="wrap" id="app"></main>
+
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hash=s=>[...s].reduce((a,c)=>(a*31+c.charCodeAt(0))%9973,7);
+const txt=h=>{const t=document.createElement('template');t.innerHTML=h;return t.content.textContent.replace(/\s+/g,' ').trim()};
+const ME='@Tú',USERS=['@MarioGames','@FilmCritic','@ActionFan','@Analista','@SerieAddict','@BookLover'];
+const S=(t)=>`<span class="spl">${t}</span>`;
+/* tipos: campos propios de cada formato, todos opcionales */
+const TYPES={pelicula:['Película',[['Director','David Fincher'],['Año','1999'],['Dónde la viste','Cine, Netflix, Blu-ray…']]],
+serie:['Serie',[['Creador','Vince Gilligan'],['Temporadas vistas','5'],['Dónde la viste','HBO, Netflix…']]],
+juego:['Juego',[['Plataforma','PC, PS5, Switch…'],['Horas jugadas','38'],['Estado',['Pasado','Platino / 100%','Lo dejé','Jugando']]]],
+libro:['Libro',[['Autor','Isaac Asimov'],['Páginas','255'],['Formato',['Papel','Ebook','Audiolibro']]]],
+anime:['Anime',[['Estudio','Madhouse'],['Episodios','24'],['Dónde lo viste','Crunchyroll…']]],
+musica:['Música',[['Artista','Radiohead'],['Año','2000'],['Formato',['Álbum','Canción','Directo']]]],
+comic:['Cómic',[['Autor','Alan Moore'],['Tomo','Único'],['Editorial','Panini…']]],
+otro:['Otro',[['Qué es','Podcast, obra de teatro, app…'],['Creador','']]]};
+let R=[
+{id:1,type:'pelicula',title:'El Club de la Pelea',by:'@MarioGames',score:9.5,verdict:'Una bofetada brillante que mejora con cada visionado.',facts:[['Director','David Fincher'],['Año','1999'],['Dónde la viste','Blu-ray']],pros:['Montaje y fotografía','Giro final','Química Pitt–Norton','Banda sonora de los Dust Brothers'],cons:['Algo cínica en su segunda mitad','El tercer acto se acelera'],tags:['Drama','Thriller','Imprescindible'],spoiler:true,
+body:`<h2>Lo que no te cuentan</h2><p>La vi a los 17 y la volví a ver a los 30. <b>No es la misma película.</b></p><p>Fincher convierte el insomnio en un estilo: todo está <i>ligeramente</i> fuera de foco, como si el narrador no durmiera hace días.</p><blockquote>Es solo después de perderlo todo cuando somos libres de hacer cualquier cosa.</blockquote><h3>El truco</h3><p>Tyler aparece en pantalla antes de presentarse. Ahí está la clave: ${S('Tyler es el propio narrador')}.</p><hr><p>Si no la has visto, hazlo sin leer nada más.</p>`},
+{id:2,type:'serie',title:'Breaking Bad',by:'@SerieAddict',score:10,verdict:'Cómo se construye un monstruo, un episodio a la vez.',facts:[['Creador','Vince Gilligan'],['Temporadas vistas','5']],pros:['Guion','Walter White'],cons:[],tags:['Crimen','Drama'],body:'<p>Cinco temporadas sin una sola que sobre. El <b>piloto</b> ya te dice de qué va, pero no cuánto vas a sufrir.</p>'},
+{id:3,type:'libro',title:'Fundación',by:'@BookLover',score:8,verdict:'Ideas enormes, personajes pequeños.',facts:[['Autor','Isaac Asimov'],['Páginas','255'],['Formato','Papel']],pros:['Ideas','Escala temporal'],cons:['Personajes planos'],tags:['Ciencia ficción','Clásico'],body:'<p>La psicohistoria sigue siendo uno de los mejores <i>conceptos</i> de la ciencia ficción.</p>'},
+{id:4,type:'juego',title:'Hollow Knight',by:'@Analista',score:9,verdict:'Me perdí 38 horas y no quería encontrarme.',facts:[['Plataforma','PC'],['Horas jugadas','38'],['Estado','Pasado']],pros:['Mundo y música','Jefes'],cons:['El Camino del Dolor'],tags:['Metroidvania','Indie'],body:'<h2>Un mapa que se gana</h2><p>Nadie te lleva de la mano. Eso, hoy, es un <b>lujo</b>.</p>'}];
+let C={1:[
+{id:1,u:'@MarioGames',t:'hace 3 h',v:42,body:'<p>Totalmente de acuerdo. La mejor película de los 90, y el giro me pilló por sorpresa la primera vez.</p>',k:[
+ {id:2,u:'@FilmCritic',t:'hace 2 h',v:156,body:'<p>Los detalles visuales que metió Fincher son brutales: cada visionado descubres algo nuevo.</p>',k:[
+  {id:3,u:'@ActionFan',t:'hace 1 h',v:7,body:`<p>Y la química Pitt–Norton es increíble. Lo mejor es que ${S('Tyler y el narrador son la misma persona')} y aun así te la cuelan. <i>(pasa el ratón por encima)</i></p>`,k:[
+   {id:6,u:'@MarioGames',t:'hace 40 min',v:3,body:'<p><span class="men">@ActionFan</span> Eso es lo que la hace rewatcheable.</p>',k:[]}]}]}]},
+{id:4,u:'@Analista',t:'hace 45 min',v:5,body:'<p>Estructura narrativa perfecta. <span class="men">@Tú</span>, ¿te fijaste en el fotograma subliminal del proyector?</p>',k:[]},
+{id:5,u:'@Trollcito',t:'hace 5 h',v:-12,body:'<p>Sobrevalorada.</p>',k:[]}]};
+let seq=20,filter='todo',notifTab='all',cur=null,ctype='pelicula',topId=null,LST={pros:[],cons:[],tags:[]};
+let N=[{id:1,type:'mention',from:'@Analista',rid:1,cid:4,text:'@Tú, ¿te fijaste en el fotograma subliminal del proyector?',t:'hace 45 min',un:true},
+{id:2,type:'quote',from:'@FilmCritic',rid:1,cid:2,text:'citó tu review: «Es solo después de perderlo todo…»',t:'hace 2 h',un:true},
+{id:3,type:'reply',from:'@MarioGames',rid:1,cid:6,text:'te respondió en El Club de la Pelea',t:'ayer',un:false}];
+/* ---------- sanear HTML del editor ---------- */
+const OK=['B','STRONG','I','EM','U','S','STRIKE','DEL','H2','H3','P','DIV','BR','UL','OL','LI','BLOCKQUOTE','HR','A','IMG','SPAN'];
+function clean(html){const t=document.createElement('template');t.innerHTML=html;
+ (function w(n){[...n.childNodes].forEach(c=>{if(c.nodeType==3)return;if(c.nodeType!=1){c.remove();return}const tg=c.tagName;
+  if(['SCRIPT','STYLE','IFRAME','OBJECT'].includes(tg)){c.remove();return}w(c);
+  if(!OK.includes(tg)){c.replaceWith(...c.childNodes);return}
+  [...c.attributes].forEach(a=>{const k=a.name,v=a.value;if(tg=='A'&&k=='href'&&/^https?:/i.test(v))return;if(tg=='IMG'&&(k=='alt'||(k=='src'&&/^https?:/i.test(v))))return;if(tg=='SPAN'&&k=='class'&&/^(spl|men)$/.test(v))return;c.removeAttribute(k)});
+  if(tg=='IMG'&&!c.getAttribute('src'))c.remove();else if(tg=='A'){c.target='_blank';c.rel='noopener nofollow'}else if(tg=='SPAN'&&!c.className)c.replaceWith(...c.childNodes)})})(t.content);
+ return t.innerHTML}
+/* ---------- editor WYSIWYG ---------- */
+document.execCommand('defaultParagraphSeparator',false,'p');
+const ed=b=>b.closest('.ed,.cmp').querySelector('.rte');
+const SIMPLE=['bold','italic','underline','strikeThrough','insertUnorderedList','insertOrderedList','insertHorizontalRule','undo','redo'];
+function cmd(b){const c=b.dataset.c,el=ed(b);el.focus();
+ if(SIMPLE.includes(c))document.execCommand(c);
+ else if(['h2','h3','blockquote'].includes(c)){const cv=document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g,'');document.execCommand('formatBlock',false,'<'+(cv==c?'p':c)+'>')}
+ else if(c=='link'){const u=prompt('Pega el enlace (https://…)');if(u&&/^https?:/i.test(u)){const s=getSelection().toString();s?document.execCommand('createLink',false,u):document.execCommand('insertHTML',false,`<a href="${esc(u)}">${esc(u)}</a>&nbsp;`)}}
+ else if(c=='image'){const u=prompt('URL de la imagen (https://…)');if(u&&/^https?:/i.test(u))document.execCommand('insertImage',false,u)}
+ else if(c=='spoiler'){const sel=getSelection(),an=sel.anchorNode&&(sel.anchorNode.nodeType==1?sel.anchorNode:sel.anchorNode.parentElement),sp=an&&an.closest('.spl');
+  if(sp){sp.replaceWith(...sp.childNodes)}else{const s=sel.toString();document.execCommand('insertHTML',false,`<span class="spl">${esc(s||'texto oculto')}</span>&nbsp;`);if(!s){const n=el.querySelector('.spl:last-of-type');}}}
+ else if(c=='mention'){document.execCommand('insertText',false,'@');mentionCheck(el)}
+ ri(el);btnState()}
+function ri(el){if(el.innerHTML=='<br>'||el.innerHTML=='<p><br></p>')el.innerHTML='';if(el.id=='f-body')stats()}
+function paste(e){e.preventDefault();document.execCommand('insertText',false,e.clipboardData.getData('text/plain'))}
+function btnState(){const f=document.activeElement;if(!f||!f.classList||!f.classList.contains('rte'))return;const tb=f.closest('.ed,.cmp').querySelector('.tb'),bv=document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g,'');
+ tb.querySelectorAll('button[data-c]').forEach(b=>{const c=b.dataset.c;let on=false;try{on=SIMPLE.includes(c)&&!['insertHorizontalRule','undo','redo'].includes(c)?document.queryCommandState(c):['h2','h3','blockquote'].includes(c)?bv==c:false}catch(e){}
+  if(c=='spoiler'){const sel=getSelection(),an=sel.anchorNode&&(sel.anchorNode.nodeType==1?sel.anchorNode:sel.anchorNode.parentElement);on=!!(an&&an.closest('.spl'))}b.classList.toggle('on',on)})}
+document.addEventListener('selectionchange',btnState);
+function tbHTML(full){const B=(c,l,t,x='')=>`<button class="${x}" data-c="${c}" title="${t}" onmousedown="event.preventDefault()" onclick="cmd(this)">${l}</button>`,D='<i class="d"></i>';
+ return full?B('bold','<b>B</b>','Negrita (Ctrl+B)')+B('italic','<i>I</i>','Cursiva (Ctrl+I)')+B('underline','<u>U</u>','Subrayado (Ctrl+U)')+B('strikeThrough','<s>S</s>','Tachado')+D+B('h2','Título','Título de sección')+B('h3','Subtítulo','Subtítulo')+D+B('insertUnorderedList','• Lista','Lista')+B('insertOrderedList','1. Lista','Lista numerada')+B('blockquote','❝ Cita','Cita')+B('insertHorizontalRule','✦','Separador')+D+B('link','🔗','Insertar enlace')+B('image','🖼','Insertar imagen por URL')+B('mention','@','Mencionar a alguien')+B('spoiler','Spoiler','Ocultar como spoiler','sp')+D+B('undo','↶','Deshacer')+B('redo','↷','Rehacer')
+ :B('bold','<b>B</b>','Negrita')+B('italic','<i>I</i>','Cursiva')+B('blockquote','❝','Cita')+B('mention','@','Mencionar')+B('spoiler','Spoiler','Ocultar como spoiler','sp')}
+let dt;function stats(){const el=$('#f-body'),w=el.innerText.trim()?el.innerText.trim().split(/\s+/).length:0;
+ $('#st').innerHTML=`${w} palabras · ${Math.max(1,Math.round(w/220))} min de lectura`+(el.querySelector('.spl')?' · <span class="sw">Contiene spoilers: se avisará al lector</span>':'');
+ clearTimeout(dt);dt=setTimeout(()=>{try{localStorage.setItem('draft',clean(el.innerHTML));$('#ds').textContent=w?'Borrador guardado':''}catch(e){}},600)}
+/* ---------- listas (lo mejor / lo peor / etiquetas) ---------- */
+function lst(k,cls,ph){return `<div class="lst" onclick="this.querySelector('input').focus()" id="l-${k}"><span id="c-${k}" style="display:contents"></span><input placeholder="${ph}" aria-label="${ph}" onkeydown="lk(event,'${k}')" onblur="la('${k}',this)"></div>`}
+function lr(k){const cl={pros:'p',cons:'c',tags:'t'}[k];$('#c-'+k).innerHTML=LST[k].map((x,i)=>`<span class="li ${cl}">${esc(x)}<button aria-label="Quitar" onclick="event.stopPropagation();LST['${k}'].splice(${i},1);lr('${k}')">×</button></span>`).join('')}
+function la(k,i){const v=i.value.trim().replace(/,$/,'');if(v){LST[k].push(v);i.value='';lr(k)}}
+function lk(e,k){if(e.key=='Enter'||e.key==','){e.preventDefault();la(k,e.target)}else if(e.key=='Backspace'&&!e.target.value&&LST[k].length){LST[k].pop();lr(k)}}
+function addFact(){$('#xf').insertAdjacentHTML('beforeend',`<div class="xf"><input class="in xl" placeholder="Dato (ej: Idioma)"><input class="in xv" placeholder="Valor (ej: Japonés)"><button class="ghost" onclick="this.parentElement.remove()" aria-label="Quitar dato">×</button></div>`)}
+/* ---------- toasts ---------- */
+function toast(o){const el=document.createElement('div');el.className='toast '+(o.type||'info');el.setAttribute('role',o.type=='err'?'alert':'status');
+ const ms=o.ms||6000,ic={ok:'✓',err:'!',info:'@'}[o.type||'info'];
+ el.innerHTML=`<div class="ti">${ic}</div><div><strong>${o.title}</strong><br><span>${o.msg||''}</span></div><button class="x" aria-label="Cerrar">×</button>${o.action?`<button class="ta">${o.action.label}</button>`:''}<div class="bar" style="animation-duration:${ms}ms"></div>`;
+ const kill=()=>{el.classList.add('out');setTimeout(()=>el.remove(),250)};
+ el.querySelector('.x').onclick=kill;if(o.action)el.querySelector('.ta').onclick=()=>{kill();o.action.fn()};
+ $('#toasts').prepend(el);setTimeout(kill,ms)}
+/* ---------- notificaciones ---------- */
+function pop(id){const p=document.getElementById(id),o=p.classList.contains('open');document.querySelectorAll('.pop').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.ib[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded','false'));if(!o){p.classList.add('open');p.previousElementSibling.setAttribute('aria-expanded','true');if(id=='np')renderN()}}
+document.addEventListener('click',e=>{if(!e.target.closest('.rel'))document.querySelectorAll('.pop').forEach(x=>x.classList.remove('open'));hideMn();
+ const s=e.target.closest('.spl');if(s&&!s.closest('.rte'))s.classList.toggle('show')});
+document.addEventListener('keydown',e=>{if(e.key=='Escape')document.querySelectorAll('.pop').forEach(x=>x.classList.remove('open'))});
+function badge(){const n=N.filter(x=>x.un).length,b=$('#bd');b.hidden=!n;b.textContent=n>9?'9+':n}
+function renderN(){const tabs=[['all','Todas'],['mention','Menciones'],['quote','Citas'],['reply','Respuestas']],ic={mention:'@',quote:'“',reply:'↩'};
+ $('#nt').innerHTML=tabs.map(([k,l])=>`<button class="tab ${notifTab==k?'on':''}" onclick="notifTab='${k}';renderN()">${l}</button>`).join('');
+ const L=N.filter(n=>notifTab=='all'||n.type==notifTab);
+ $('#nl').innerHTML=L.length?L.map(n=>`<button class="ni ${n.un?'un':''}" onclick="openN(${n.id})"><span class="ico">${ic[n.type]}</span><span><b>${n.from}</b> ${n.type=='mention'?'te mencionó':n.type=='quote'?'':'te respondió'}<small>${n.t} · ${esc(R.find(r=>r.id==n.rid).title)}</small><p>${esc(n.text)}</p></span></button>`).join(''):'<div class="empty">Nada por aquí todavía.<br>Cuando alguien te mencione o cite, lo verás aquí.</div>';badge()}
+function readAll(){N.forEach(n=>n.un=false);renderN()}
+function openN(id){const n=N.find(x=>x.id==id);n.un=false;document.querySelectorAll('.pop').forEach(x=>x.classList.remove('open'));badge();open_(n.rid,n.cid)}
+/* ---------- router ---------- */
+function go(p){document.querySelectorAll('.nv').forEach(b=>b.classList.toggle('on',b.dataset.p==p));window.scrollTo(0,0);p=='home'?home():create()}
+function open_(id,cid){cur=R.find(r=>r.id==id);document.querySelectorAll('.nv').forEach(b=>b.classList.remove('on'));detail();
+ if(cid)setTimeout(()=>{const e=document.getElementById('c'+cid);if(e){let p=e.parentElement.closest('.col');while(p){p.classList.remove('col');p=p.parentElement.closest('.col')}e.scrollIntoView({behavior:'smooth',block:'center'});e.classList.add('hl');setTimeout(()=>e.classList.remove('hl'),2300)}},60);else window.scrollTo(0,0)}
+const cover=r=>`<div class="cover" style="--h:${hash(r.title)%360}"><span>${esc(r.title)}</span>${r.img?`<img src="${esc(r.img)}" alt="" onerror="this.remove()">`:''}</div>`;
+const ring=s=>`<div class="ring" style="--p:${s*10}"><b>${s}</b></div>`;
+const count=a=>a.reduce((n,c)=>n+1+count(c.k),0);
+/* ---------- inicio ---------- */
+function home(){const L=R.filter(r=>filter=='todo'||r.type==filter);
+ $('#app').innerHTML=`<section class="hero"><h1>Acabas de terminarlo. Cuéntalo.</h1><p>Películas, series, juegos, libros, música… Un sitio para escribir sin prisa lo que te dejó algo en la cabeza.</p>
+ <div class="chips">${[['todo','Todo'],...Object.entries(TYPES).map(([k,v])=>[k,v[0]])].map(([k,l])=>`<button class="chip ${filter==k?'on':''}" onclick="filter='${k}';home()">${l}</button>`).join('')}</div></section>
+ <div class="feed">${L.length?L.map(r=>`<button class="card" onclick="open_(${r.id})">${cover(r)}<div><h3>${esc(r.title)}</h3><div class="meta">${TYPES[r.type][0]} · ${esc(r.facts.map(f=>f[1]).slice(0,2).join(' · '))} · por ${r.by}</div><p class="snip">${esc(r.verdict||txt(r.body))}</p><div class="tags">${r.spoiler?'<span class="tag sp">Con spoilers</span>':''}${r.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div><div>${ring(r.score)}<div class="cc">${count(C[r.id]||[])} 💬</div></div></button>`).join(''):'<div class="empty">Aún no hay reviews de esto. Escribe la primera.</div>'}</div>`}
+/* ---------- crear ---------- */
+function create(){ctype='pelicula';LST={pros:[],cons:[],tags:[]};let d='';try{d=clean(localStorage.getItem('draft')||'')}catch(e){}
+ $('#app').innerHTML=`<section class="cr"><h1>¿Qué acabas de terminar?</h1><p class="sub">Elige el formato y escribe como si se lo contaras a un colega.</p>
+ <div class="blk"><div class="chips" id="ty">${Object.entries(TYPES).map(([k,v])=>`<button class="chip" onclick="setType('${k}')">${v[0]}</button>`).join('')}</div></div>
+ <div class="blk"><input class="in big" id="f-title" placeholder="Título" aria-label="Título"></div>
+ <div class="blk"><div class="grid3" id="facts"></div><div id="xf"></div><button class="addf" onclick="addFact()">+ Añadir otro dato</button></div>
+ <div class="blk"><label class="lab" for="f-verdict">Veredicto en una frase <small>(lo primero que leerán)</small></label><input class="in" id="f-verdict" maxlength="90" placeholder="Ej: Una bofetada brillante que mejora con cada visionado."></div>
+ <div class="blk"><label class="lab">Tu review</label><div class="ed"><div class="tb" role="toolbar" aria-label="Formato">${tbHTML(true)}</div>
+  <div class="rte" id="f-body" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Texto de la review" data-ph="Empieza por lo que sentiste al terminar. El análisis viene después…" oninput="ri(this);mentionCheck(this)" onpaste="paste(event)">${d}</div>
+  <div class="ef"><span id="st"></span><span id="ds"></span></div></div>
+  <div class="tip">Se ve tal cual lo escribes. Lo que marques como <b style="color:var(--bad)">Spoiler</b> saldrá borroso para el lector hasta que lo toque o pase el ratón.</div></div>
+ <div class="blk grid2"><div><label class="lab">Lo mejor <small>(todos los puntos que quieras, Enter para añadir)</small></label>${lst('pros','p','Escribe un punto y pulsa Enter')}</div><div><label class="lab">Lo peor <small>(igual, o déjalo vacío)</small></label>${lst('cons','c','Escribe un punto y pulsa Enter')}</div></div>
+ <div class="blk"><label class="lab">Nota</label><div class="scorebox"><div id="rg">${ring(8)}</div><input type="range" id="f-score" min="0" max="10" step="0.5" value="8" oninput="$('#rg').innerHTML=ring(this.value)" aria-label="Nota de 0 a 10"></div></div>
+ <div class="blk grid2"><div><label class="lab">Etiquetas</label>${lst('tags','t','Drama, Indie, Cozy… (Enter)')}</div><div><label class="lab">Portada <small>(URL, opcional)</small></label><input class="in" id="f-img" placeholder="https://…"></div></div>
+ <div class="pub"><button class="ghost" onclick="go('home')">Descartar</button><button class="cta" onclick="publish()">Publicar review</button></div></section>`;
+ setType('pelicula');stats()}
+function setType(k){ctype=k;document.querySelectorAll('#ty .chip').forEach(c=>c.classList.toggle('on',c.textContent==TYPES[k][0]));
+ $('#facts').innerHTML=TYPES[k][1].map(([l,p])=>`<div><label class="lab">${l} <small>(opcional)</small></label>${Array.isArray(p)?`<select class="in fx" data-l="${l}"><option value="">—</option>${p.map(o=>`<option>${o}</option>`).join('')}</select>`:`<input class="in fx" data-l="${l}" placeholder="${p}">`}</div>`).join('')}
+function publish(){const t=$('#f-title').value.trim(),el=$('#f-body'),body=clean(el.innerHTML),words=el.innerText.trim().split(/\s+/).filter(Boolean).length;
+ if(!t)return toast({type:'err',title:'Falta el título',msg:'Escribe qué has visto, jugado o leído.'});
+ if(words<10)return toast({type:'err',title:'Tu review es muy corta',msg:'Cuéntanos al menos un par de frases (10 palabras).'});
+ const facts=[...document.querySelectorAll('.fx')].map(x=>[x.dataset.l,x.value.trim()]).concat([...document.querySelectorAll('.xf')].map(x=>[x.querySelector('.xl').value.trim(),x.querySelector('.xv').value.trim()])).filter(f=>f[0]&&f[1]);
+ document.querySelectorAll('.lst input').forEach(i=>i.blur());
+ const r={id:++seq,type:ctype,title:t,by:ME,score:+$('#f-score').value,verdict:$('#f-verdict').value.trim(),body,img:$('#f-img').value.trim(),pros:LST.pros,cons:LST.cons,tags:LST.tags,spoiler:/class="spl"/.test(body),facts};
+ R.unshift(r);C[r.id]=[];try{localStorage.removeItem('draft')}catch(e){}
+ open_(r.id);toast({type:'ok',title:'Review publicada',msg:`«${esc(t)}» ya está en el inicio.`})}
+/* ---------- detalle y comentarios ---------- */
+const sc=c=>c.v+(c.my||0);
+function walk(a,f){a.forEach(c=>{f(c);walk(c.k,f)})}
+function computeTop(){let b=null,m=9;walk(C[cur.id],c=>{if(sc(c)>m){m=sc(c);b=c.id}});topId=b}
+function detail(){const r=cur,cs=C[r.id]||(C[r.id]=[]);computeTop();
+ $('#app').innerHTML=`<article class="dt"><button class="back" onclick="go('home')">← Volver</button>
+ <div class="dh">${cover(r)}<div><h1>${esc(r.title)}</h1><div class="meta">${TYPES[r.type][0]} · por <b>${r.by}</b></div>
+ <div style="display:flex;gap:1rem;align-items:center;margin:.8rem 0">${ring(r.score)}<div class="facts">${r.facts.map(f=>`<div class="fact">${esc(f[0])}<b>${esc(f[1])}</b></div>`).join('')}</div></div>
+ ${r.verdict?`<p class="verdict">${esc(r.verdict)}</p>`:''}<div class="tags">${r.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div></div>
+ ${r.spoiler?'<div class="spw">Esta review contiene spoilers. Las partes borrosas se ven al pasar el ratón o al tocarlas.</div>':''}
+ <div class="prose">${r.body}</div>
+ ${r.pros.length||r.cons.length?`<div class="pc"><div class="p"><h4>Lo mejor</h4><ul>${r.pros.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>—</li>'}</ul></div><div class="c"><h4>Lo peor</h4><ul>${r.cons.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>—</li>'}</ul></div></div>`:''}
+ <div class="chd"><h2>Conversación (${count(cs)})</h2></div>
+ <div>${composer(0)}</div><div id="cl">${cs.map(c=>cm(c,0)).join('')||'<div class="empty">Nadie ha comentado todavía. Empieza tú la conversación.</div>'}</div></article>`;fixSpl()}
+function fixSpl(){document.querySelectorAll('.spl').forEach(s=>{if(!s.closest('.rte')){s.tabIndex=0;s.setAttribute('role','button');s.setAttribute('aria-label','Spoiler, toca para ver')}})}
+function cm(c,d,p){const s=sc(c),hid=!c.show&&(s<=-5||c.my<0),top=c.id==topId;
+ return `<div class="cm ${d>=4?'flat':''} ${hid?'hidc':''} ${top?'topc':''}" id="c${c.id}"><div><div class="av" style="--h:${hash(c.u)%360}">${c.u[1].toUpperCase()}</div><div class="rail" onclick="this.closest('.cm').classList.toggle('col')" title="Contraer o abrir hilo" role="button" aria-label="Contraer hilo"></div></div>
+ <div class="cb"><div class="in-c"><div class="top"><b>${c.u}</b>${c.u==cur.by?'<span class="op">Autor</span>':''}${top?'<span class="best">★ Más votado</span>':''}<span>${c.t}</span>${p?`<span class="to">↩ a <em>${p}</em></span>`:''}</div>
+ ${hid?`<div class="hid"><span>${c.my<0?'Has ocultado este comentario':'Oculto por votos negativos ('+s+')'}</span><button onclick="showC(${c.id})">Mostrar</button>${c.my<0?`<button onclick="vote(${c.id},-1)">Deshacer voto</button>`:''}</div>`
+ :`<div class="txt">${c.body}</div><div class="act"><button class="up ${c.my>0?'on':''}" onclick="vote(${c.id},1)" aria-label="Votar a favor">▲</button><span class="sc">${s}</span><button class="dn ${c.my<0?'on':''}" onclick="vote(${c.id},-1)" aria-label="Votar en contra">▼</button><button onclick="reply(${c.id},false)">Responder</button><button onclick="reply(${c.id},true)">Citar</button></div>`}</div>
+ <div class="slot" id="s${c.id}"></div><div class="kids">${c.k.map(k=>cm(k,d+1,c.u)).join('')}</div></div></div>`}
+const find=(a,id)=>{for(const c of a){if(c.id==id)return c;const f=find(c.k,id);if(f)return f}};
+const parentOf=(a,id,p=null)=>{for(const c of a){if(c.id==id)return p;const f=parentOf(c.k,id,c);if(f!==undefined)return f}};
+function rc(id){const e=$('#c'+id);if(!e)return;const c=find(C[cur.id],id),d=[...document.querySelectorAll('.cm')].filter(x=>x!=e&&x.contains(e)).length;e.outerHTML=cm(c,d,(parentOf(C[cur.id],id)||{}).u);fixSpl()}
+function vote(id,v){const c=find(C[cur.id],id),old=topId;c.my=c.my==v?0:v;c.show=false;computeTop();rc(id);
+ [old,topId].filter(x=>x&&x!=id).forEach(rc);
+ if(c.my<0)toast({type:'info',title:'Comentario oculto',msg:`Has votado en contra de ${c.u}.`,action:{label:'Deshacer',fn:()=>vote(id,-1)},ms:5000})}
+function showC(id){find(C[cur.id],id).show=true;rc(id)}
+function composer(pid,q){return `<div class="cmp">${q?`<div class="ctx"><span>Respondiendo a <em>${q}</em></span><button onclick="$('#s${pid}').innerHTML=''" aria-label="Cancelar">×</button></div>`:''}
+ <div class="rte" id="ta${pid}" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Comentario" data-ph="${pid?'Escribe tu respuesta…':'Añade tu comentario. Usa @ para mencionar'}" oninput="ri(this);mentionCheck(this)" onkeydown="if((event.ctrlKey||event.metaKey)&&event.key=='Enter'){post(${pid})}" onpaste="paste(event)"></div>
+ <div class="tb">${tbHTML(false)}<span class="go">${pid?`<button class="ghost" style="padding:.35rem .9rem;font-size:14px" onclick="$('#s${pid}').innerHTML=''">Cancelar</button>`:''}<button class="cta" onclick="post(${pid})">${pid?'Responder':'Comentar'}</button></span></div></div>`}
+function reply(id,quote){document.querySelectorAll('.slot').forEach(s=>s.innerHTML='');const c=find(C[cur.id],id);
+ $('#s'+id).innerHTML=composer(id,c.u);const t=$('#ta'+id);
+ t.innerHTML=quote?`<blockquote><b>${c.u}:</b> ${esc(txt(c.body).slice(0,140))}</blockquote><p><br></p>`:`<span class="men">${c.u}</span>&nbsp;`;
+ t.focus();const r=document.createRange();r.selectNodeContents(t);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+function post(pid){const t=$('#ta'+pid),html=clean(t.innerHTML);
+ if(!t.innerText.trim().replace(/^@\w+$/,''))return toast({type:'err',title:'El comentario está vacío',msg:'Escribe algo antes de publicar.'});
+ const c={id:++seq,u:ME,t:'ahora',v:1,my:0,body:html,k:[]},par=pid?find(C[cur.id],pid):null;(par?par.k:C[cur.id]).push(c);
+ detail();setTimeout(()=>{const e=$('#c'+c.id);e.scrollIntoView({behavior:'smooth',block:'center'});e.classList.add('hl')},50);
+ toast({type:'ok',title:par?'Respuesta publicada':'Comentario publicado',msg:par?`Se la hemos enviado a ${par.u}.`:'Ya forma parte de la conversación.'})}
+/* ---------- menciones ---------- */
+let mr=null;
+function mentionCheck(el){const s=getSelection();if(!s.rangeCount||!s.anchorNode||s.anchorNode.nodeType!=3)return hideMn();const n=s.anchorNode,m=n.data.slice(0,s.anchorOffset).match(/(^|\s)@(\w*)$/);if(!m)return hideMn();
+ const L=USERS.filter(u=>u.toLowerCase().includes('@'+m[2].toLowerCase())).slice(0,5);if(!L.length)return hideMn();
+ mr={n,start:s.anchorOffset-m[2].length-1,end:s.anchorOffset,el};const r=s.getRangeAt(0).cloneRange();r.collapse(true);const b=r.getClientRects()[0]||el.getBoundingClientRect(),mn=$('#mn');
+ mn.style.cssText=`display:block;left:${Math.min(b.left,innerWidth-190)}px;top:${Math.min(b.bottom+6,innerHeight-210)}px`;
+ mn.innerHTML=L.map((u,i)=>`<button class="${i?'':'on'}" onmousedown="event.preventDefault();pick('${u}')">${u}</button>`).join('')}
+function hideMn(){$('#mn').style.display='none'}
+function pick(u){if(!mr)return;const r=document.createRange();r.setStart(mr.n,mr.start);r.setEnd(mr.n,mr.end);const s=getSelection();s.removeAllRanges();s.addRange(r);mr.el.focus();
+ document.execCommand('insertHTML',false,`<span class="men">${u}</span>&nbsp;`);hideMn();ri(mr.el)}
+document.addEventListener('keydown',e=>{const m=$('#mn');if(m.style.display=='block'){if(e.key=='Tab'||e.key=='Enter'){e.preventDefault();e.stopPropagation();pick(m.querySelector('.on').textContent)}else if(e.key=='Escape')hideMn()}},true);
+/* ---------- ajustes ---------- */
+function theme(t){document.documentElement.dataset.theme=t;document.querySelectorAll('#th button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));try{localStorage.setItem('theme',t)}catch(e){}}
+function fsize(s){document.documentElement.style.setProperty('--cs',s+'px');try{localStorage.setItem('fs',s)}catch(e){}}
+let st0='dark',sz='15';try{st0=localStorage.getItem('theme')||'dark';sz=localStorage.getItem('fs')||'15'}catch(e){}
+theme(st0);fsize(sz);$('#fs').value=sz;badge();home();
+setTimeout(()=>{const n={id:++seq,type:'mention',from:'@BookLover',rid:1,cid:3,text:'@Tú esa escena del baño es lo mejor de toda la película.',t:'ahora',un:true};N.unshift(n);badge();
+ $('#bell').classList.add('ring-bell');setTimeout(()=>$('#bell').classList.remove('ring-bell'),900);
+ toast({type:'info',title:'@BookLover te mencionó',msg:'en El Club de la Pelea',action:{label:'Ver comentario',fn:()=>openN(n.id)},ms:9000})},8000);
+</script>
+</body>
+</html>
